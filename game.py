@@ -123,7 +123,7 @@ def buildBoard(player,level,size):
 		y = random.randint(0,size-1)
 		pos = (x,y)
 		ret.append(Potion(pos,size))
-	for i in range(int(size + level/50)):
+	for i in range(int(size + level/5)):
 		x = random.randint(0,size-1)
 		y = random.randint(0,size-1)
 		pos = (x,y)
