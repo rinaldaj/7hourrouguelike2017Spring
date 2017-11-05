@@ -114,11 +114,28 @@ def sortByPriority(board):
 		tmpl.pop(0)
 		return sortByPriority([x for x in tmpl if x.priority < tmp.priority]).append(tmp).append(sortByPriority([x for x in tmpl if x.priority >= tmp.priority]))
 
-def updateBoard(ins,disp):
+def overlap(one,two):
+	x1,y1 = one.getPos()
+	x2,y2 = two.getPos()
+	return x1 == x2 and y1 == y2
+
+def updateBoard(ins,disp,size):
 	#board = sortByPriority(ins)
 	for i in ins:
 		x,y = i.getPos()
 		pygame.draw.rect(disp,i.getColor(),(x*100,y*100,100,100),0)
+	whitespace = []
+	for x in range(size):
+		for y in range(size):
+			over = False
+			for j in ins:
+				if overlap(Entity((x,y),size),j):
+					over = True
+			if not over:
+				whitespace.append((x,y))
+	for (x,y) in whitespace:
+		pygame.draw.rect(disp,pygame.Color(0,0,0,0),(x*100,y*100,100,100),0)
+		
 	pygame.display.update()
 		
 
@@ -134,9 +151,9 @@ player = Player((0,0),size)
 ins = buildBoard(player,level,size)
 
 
-updateBoard(ins,display)
+updateBoard(ins,display,size)
 
 while player.getHealth() > 0:
 	for i in ins:
 		i.move()
-	updateBoard(ins,display)
+	updateBoard(ins,display,size)
