@@ -26,7 +26,7 @@ class Entity:
 	def takeDamage(self,pain):
 		self.health = self.health - pain
 	def getPos(self):
-		self.pos
+		return self.pos
 
 class Player(Entity):
 	def __init__(self,pos,size):
@@ -37,21 +37,26 @@ class Player(Entity):
 		self.health = 255
 	def move(self):
 		pressed = pygame.key.get_pressed()
-		while (not pressed ):
-			pressed = pygame.key.get_pressed()
-		x ,y = self.pos
-		if pressed['a']:
-			if x - 1 >= 0:
-				self.pos = (x-1,y)
-		elif pressed['s']:
-			if y - 1 >= 0:
-				self.pos = (x,y-1)
-		elif pressed['w']:
-			if y + 1 < size:
-				self.pos = (x,y+1)
-		elif pressed['a']:
-			if x + 1 < size:
-				self.pos = (x+1,y)
+		while True:
+			x ,y = self.pos
+			for event in pygame.event.get():
+				if event.type == pygame.KEYDOWN:
+					if event.key == pygame.K_LEFT:
+						if x - 1 >= 0:
+							self.pos = (x-1,y)
+							return
+					elif event.key == pygame.K_UP:
+						if y - 1 >= 0:
+							self.pos = (x,y-1)
+							return
+					elif event.key == pygame.K_DOWN:
+						if y + 1 < size:
+							self.pos = (x,y+1)
+							return
+					elif event.key == pygame.K_RIGHT:
+						if x + 1 < size:
+							self.pos = (x+1,y)
+							return
 	def attack(self,victim):
 		victim.takeDamage(10)
 	def takeDamage(self,pain):
@@ -84,6 +89,54 @@ class Potion(Entity):
 		self.health = 0
 
 
+def buildBoard(player,level,size):
+	ret = []
+	for i in range(level):
+		x = random.randint(0,size)
+		y = random.randint(0,size)
+		pos = (x,y)
+		ret.append(Enemy(pos,size))
+	for i in range(int(level/6)):
+		x = random.randint(0,size)
+		y = random.randint(0,size)
+		ret.append(Potion((x,y),size))
+	ret.append(player)
+	return ret
+def sortByPriority(board):
+	print(len(board))
+	if board is None:
+		return []
+	elif len(board) == 1:
+		return board[0]
+	else:
+		tmp = board[0]
+		tmpl = board
+		tmpl.pop(0)
+		return sortByPriority([x for x in tmpl if x.priority < tmp.priority]).append(tmp).append(sortByPriority([x for x in tmpl if x.priority >= tmp.priority]))
+
+def updateBoard(ins,disp):
+	#board = sortByPriority(ins)
+	for i in ins:
+		x,y = i.getPos()
+		pygame.draw.rect(disp,i.getColor(),(x*100,y*100,100,100),0)
+	pygame.display.update()
+		
+
+pygame.init()
+
+size = int(input("How big of a board: "))
+
+level = 1
+
+display = pygame.display.set_mode((size * 100,size * 100))
+pygame.display.update()
+player = Player((0,0),size)
+ins = buildBoard(player,level,size)
 
 
-print("hello world")
+updateBoard(ins,display)
+
+while player.getHealth() > 0:
+	for i in ins:
+		i.move()
+	updateBoard(ins,display)
