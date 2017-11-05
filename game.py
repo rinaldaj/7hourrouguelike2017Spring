@@ -203,8 +203,10 @@ ins = buildBoard(player,level,size)
 
 
 updateBoard(ins,display,size)
+rounds = 0
 
 while playerReal(ins):
+	rounds = rounds + 1
 #while 1:
 	while eEEEvil(ins):
 		for i in ins:
@@ -221,4 +223,4 @@ while playerReal(ins):
 		if i.getHealth() <= 0:
 			ins.remove(i)
 	updateBoard(ins,display,size)
-print("game over")
+print("game over you died in round "+ str(rounds))
