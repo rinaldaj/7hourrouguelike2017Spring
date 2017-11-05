@@ -78,8 +78,8 @@ class Enemy(Entity):
 	def attack(self,victim):
 		victim.takeDamage(10)
 	def move(self):
-		xC = random.randint(-1,2)
-		yC = random.randint(-1,2)
+		xC = random.randint(-1,1)
+		yC = random.randint(-1,1)
 		x,y = self.pos
 		nx = x
 		ny = y
