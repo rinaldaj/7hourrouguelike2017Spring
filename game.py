@@ -44,19 +44,16 @@ class Player(Entity):
 					if event.key == pygame.K_LEFT:
 						if x - 1 >= 0:
 							self.pos = (x-1,y)
-							return
 					elif event.key == pygame.K_UP:
 						if y - 1 >= 0:
 							self.pos = (x,y-1)
-							return
 					elif event.key == pygame.K_DOWN:
 						if y + 1 < size:
 							self.pos = (x,y+1)
-							return
 					elif event.key == pygame.K_RIGHT:
 						if x + 1 < size:
 							self.pos = (x+1,y)
-							return
+					return
 	def attack(self,victim):
 		victim.takeDamage(10)
 	def takeDamage(self,pain):
@@ -79,7 +76,7 @@ class Enemy(Entity):
 		self.health = 20
 		self.chroma = pygame.Color(255,140,0,1)
 	def attack(self,victim):
-		victim.takeDamage(5)
+		victim.takeDamage(10)
 	def move(self):
 		xC = random.randint(-1,2)
 		yC = random.randint(-1,2)
@@ -219,3 +216,4 @@ while playerReal(ins):
 		if i.getHealth() <= 0:
 			ins.remove(i)
 	updateBoard(ins,display,size)
+print("game over")
