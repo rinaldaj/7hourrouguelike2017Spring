@@ -103,6 +103,16 @@ class Potion(Entity):
 		victim.takeDamage(-8)
 		self.health = 0
 
+class Wall(Entity):
+	def __init__(self,pos,size):
+		self.pos = pos
+		self.size = size
+		self.health = 20
+		self.chroma = pygame.Color(255,255,255,1)
+	def takeDamage(self,pain):
+		return
+	def attack(self,victim):
+		victim.takeDamage(victim.getHealth())
 
 def buildBoard(player,level,size):
 	ret = []
@@ -116,6 +126,11 @@ def buildBoard(player,level,size):
 		y = random.randint(0,size-1)
 		pos = (x,y)
 		ret.append(Potion(pos,size))
+	for i in range(int(size - level/50)):
+		x = random.randint(0,size-1)
+		y = random.randint(0,size-1)
+		pos = (x,y)
+		ret.append(Wall(pos,size))
 	ret.append(player)
 	return ret
 def sortByPriority(board):
@@ -200,3 +215,7 @@ while playerReal(ins):
 	level = level + 1
 	player.put((0,0))
 	ins = buildBoard(player,level,size)
+	for i in ins:
+		if i.getHealth() <= 0:
+			ins.remove(i)
+	updateBoard(ins,display,size)
