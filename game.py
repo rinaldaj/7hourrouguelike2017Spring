@@ -61,7 +61,17 @@ class Player(Entity):
 		victim.takeDamage(10)
 	def takeDamage(self,pain):
 		Entity.takeDamage(self,pain)
-		self.chroma = pygame.Color(255 - self.health,self.health,0,1)
+		r = 255 - self.health
+		if r < 0:
+			r = 0
+		if r > 255:
+			r = 255
+		g = self.health
+		if g < 0:
+			g = 0
+		if g > 255:
+			g = 255
+		self.chroma = pygame.Color(r,g,0,1)
 class Enemy(Entity):
 	def __init__(self,pos,size):
 		self.pos = pos
@@ -82,7 +92,12 @@ class Enemy(Entity):
 			ny = y + yC
 		self.pos = (nx,ny)
 class Potion(Entity):
-	def takeDamage(self):
+	def __init__(self,pos,size):
+		self.pos = pos
+		self.size = size
+		self.health = 20
+		self.chroma = pygame.Color(0,0,255,1)
+	def takeDamage(self,pain):
 		return
 	def attack(self,victim):
 		victim.takeDamage(-8)
@@ -92,14 +107,15 @@ class Potion(Entity):
 def buildBoard(player,level,size):
 	ret = []
 	for i in range(level):
-		x = random.randint(0,size)
-		y = random.randint(0,size)
+		x = random.randint(0,size-1)
+		y = random.randint(0,size-1)
 		pos = (x,y)
 		ret.append(Enemy(pos,size))
-	for i in range(int(level/6)):
-		x = random.randint(0,size)
-		y = random.randint(0,size)
-		ret.append(Potion((x,y),size))
+	for i in range(int(level-1)):
+		x = random.randint(0,size-1)
+		y = random.randint(0,size-1)
+		pos = (x,y)
+		ret.append(Potion(pos,size))
 	ret.append(player)
 	return ret
 def sortByPriority(board):
@@ -137,6 +153,25 @@ def updateBoard(ins,disp,size):
 		pygame.draw.rect(disp,pygame.Color(0,0,0,0),(x*100,y*100,100,100),0)
 		
 	pygame.display.update()
+def killEachOther(ins):
+	for i in ins:
+		for j in ins:
+			if (not i is j) and i.getPos() == j.getPos():
+				i.attack(j)
+
+def eEEEvil(ins):
+	ret = False
+	for i in ins:
+		if isinstance(i, Enemy):
+			ret = True
+	return ret
+
+def playerReal(ins):
+	ret = False
+	for i in ins:
+		if isinstance(i, Player):
+			ret = True
+	return ret
 		
 
 pygame.init()
@@ -153,7 +188,15 @@ ins = buildBoard(player,level,size)
 
 updateBoard(ins,display,size)
 
-while player.getHealth() > 0:
-	for i in ins:
-		i.move()
-	updateBoard(ins,display,size)
+while playerReal(ins):
+	while eEEEvil(ins):
+		for i in ins:
+			i.move()
+		killEachOther(ins)
+		for i in ins:
+			if i.getHealth() <= 0:
+				ins.remove(i)
+		updateBoard(ins,display,size)
+	level = level + 1
+	player.put((0,0))
+	ins = buildBoard(player,level,size)
