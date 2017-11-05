@@ -1,6 +1,6 @@
 import pygame
 import random
-
+import sys
 
 class Entity:
 	chroma = pygame.Color(0,0,0,1)
@@ -54,6 +54,10 @@ class Player(Entity):
 						if x + 1 < size:
 							self.pos = (x+1,y)
 					return
+				if event.type == pygame.QUIT:
+					pygame.quit()
+					sys.exit()
+
 	def attack(self,victim):
 		victim.takeDamage(10)
 	def takeDamage(self,pain):
@@ -188,7 +192,7 @@ def playerReal(ins):
 
 pygame.init()
 
-size = int(input("How big of a board: "))
+size = int(input("Size of board: "))
 
 level = 1
 
